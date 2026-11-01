@@ -18,15 +18,17 @@ Fælles filer ligger i `assets/` (`style.css`, `gallery.js`, `images/`).
 3. Udfyld GPS-koordinaterne (afsnittet *How to get here* / *Sådan kommer du hertil*).
 4. Tilslut kalenderen over ledige uger.
 
-## Læg på GitHub og vis som hjemmeside
+## Automatisk upload til webhotellet
 
-```powershell
-git init
-git add .
-git commit -m "Ny hjemmeside til Casa Marcanda"
-git branch -M main
-git remote add origin https://github.com/DITBRUGERNAVN/casa-marcanda.git
-git push -u origin main
-```
+Sitet bliver liggende på Gigahost og uploades automatisk med SFTP, når ændringer pushes til `main`. Uploaden bruger webhotellets SFTP-rodmappe, hvor `index.html` og mapperne `assets`, `da`, `de` og `it` ligger.
 
-Åbn derefter repoet på GitHub: **Settings → Pages → Source: Deploy from a branch → main / (root)**. Siden vises på `https://DITBRUGERNAVN.github.io/casa-marcanda/`. Eget domæne kan tilføjes under samme menu.
+Opret følgende repository secrets på GitHub under **Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | Værdi |
+|---|---|
+| `SFTP_HOST` | `sftp.gigahost.dk` |
+| `SFTP_USERNAME` | `sheick.dk` |
+| `SFTP_PASSWORD` | SFTP-adgangskoden fra Gigahost |
+| `SFTP_HOST_FINGERPRINT` | Serverens bekræftede SHA256-fingeraftryk, fx `SHA256:...` |
+
+Brug fingeraftrykket, som vises af WinSCP ved første forbindelse, eller få det bekræftet af Gigahost. Gem kun værdierne som GitHub secrets — aldrig i filer i projektet. Når secrets er oprettet, kan uploaden startes fra **Actions → Deploy website → Run workflow**. Derefter kører den automatisk ved hvert push til `main`.

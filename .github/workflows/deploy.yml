@@ -1,0 +1,33 @@
+name: Deploy website
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install SFTP client
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund ssh2-sftp-client@11.0.0
+
+      - name: Upload website over SFTP
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_HOST_FINGERPRINT: ${{ secrets.SFTP_HOST_FINGERPRINT }}
+        run: node .github/scripts/deploy.mjs
